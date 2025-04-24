@@ -288,6 +288,17 @@ public class Main {
         return null;
     }
 
+public static void listarMateriales() {
+        if (materiales.isEmpty()) {
+            System.out.println("No hay materiales registrados.");
+        } else {
+            System.out.println("--- Lista de Materiales ---");
+            for (Material material : materiales) {
+                System.out.println(material.getTipo().toUpperCase() + " - " + material.getCodigo() + " - " + material.getTitulo());
+            }
+        }
+    }
+
     public static void agregarLibro(Scanner sc) {
         String codigo = "LIB" + String.format("%05d", materiales.size() + 1);
         System.out.print("Título: ");
