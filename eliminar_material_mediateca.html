@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Eliminar Material - Mediateca</title>
+</head>
+<body>
+    <h1>Eliminar Material - Proyecto Mediateca (Java + MySQL)</h1>
+    <p>Este archivo contiene el código Java necesario para eliminar un material desde la base de datos MySQL, en el contexto del proyecto de una mediateca con Programación Orientada a Objetos, Swing y JDBC.</p>
+
+    <h2>1. Clase de conexión a MySQL (ConexionBD.java)</h2>
+    <pre><code>import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class ConexionBD {
+    private static final String URL = "jdbc:mysql://localhost:3306/mediateca";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
+
+    public static Connection getConexion() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+}</code></pre>
+
+    <h2>2. Clase para eliminar material (GestorBD.java)</h2>
+    <pre><code>import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class GestorBD {
+    public static boolean eliminarMaterial(String codigo) {
+        String tabla = "";
+        if (codigo.startsWith("LIB")) tabla = "libros";
+        else if (codigo.startsWith("REV")) tabla = "revistas";
+        else if (codigo.startsWith("CDA")) tabla = "cds_audio";
+        else if (codigo.startsWith("DVD")) tabla = "dvds";
+        else return false;
+
+        String sql = "DELETE FROM " + tabla + " WHERE codigo = ?";
+        try (Connection conn = ConexionBD.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codigo);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}</code></pre>
+
+    <h2>3. Fragmento Swing para el botón (en el JFrame)</h2>
+    <pre><code>JButton btnEliminar = new JButton("Eliminar de BD");
+btnEliminar.addActionListener(e -> {
+    String codigo = JOptionPane.showInputDialog("Ingrese el código del material a eliminar:");
+    if (codigo != null && !codigo.trim().isEmpty()) {
+        boolean eliminado = GestorBD.eliminarMaterial(codigo);
+        if (eliminado) {
+            JOptionPane.showMessageDialog(null, "Material eliminado de la base de datos.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontró el material o ocurrió un error.");
+        }
+    }
+});</code></pre>
+
+    <p><strong>Nota:</strong> Agrega el archivo <code>mysql-connector-j-8.0.x.jar</code> al classpath de tu proyecto para que JDBC funcione correctamente.</p>
+</body>
+</html>
