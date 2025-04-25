@@ -1,25 +1,19 @@
+import javax.swing.*;
+import java.sql.*;
 
-// ConexionBD.java
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+public class EliminarMaterialMediateca {
 
-public class ConexionBD {
+    // Datos de conexión a la base de datos
     private static final String URL = "jdbc:mysql://localhost:3306/mediateca";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
+    // Métod para conectarse a la base de datos
     public static Connection getConexion() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
-}
 
-// GestorBD.java
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-public class GestorBD {
+    // Métod para eliminar material según su código
     public static boolean eliminarMaterial(String codigo) {
         String tabla = "";
         if (codigo.startsWith("LIB")) tabla = "libros";
@@ -29,7 +23,7 @@ public class GestorBD {
         else return false;
 
         String sql = "DELETE FROM " + tabla + " WHERE codigo = ?";
-        try (Connection conn = ConexionBD.getConexion();
+        try (Connection conn = getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, codigo);
             int rowsAffected = stmt.executeUpdate();
@@ -39,18 +33,14 @@ public class GestorBD {
             return false;
         }
     }
-}
 
-// EjemploUso.java
-import javax.swing.*;
-
-public class EjemploUso {
+    // Métod principal con ventana para eliminar
     public static void main(String[] args) {
         JButton btnEliminar = new JButton("Eliminar de BD");
         btnEliminar.addActionListener(e -> {
             String codigo = JOptionPane.showInputDialog("Ingrese el código del material a eliminar:");
             if (codigo != null && !codigo.trim().isEmpty()) {
-                boolean eliminado = GestorBD.eliminarMaterial(codigo);
+                boolean eliminado = eliminarMaterial(codigo);
                 if (eliminado) {
                     JOptionPane.showMessageDialog(null, "Material eliminado de la base de datos.");
                 } else {
