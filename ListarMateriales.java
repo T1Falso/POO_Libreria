@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class ListarMateriales {
 
@@ -52,10 +54,24 @@ public class ListarMateriales {
         if (materiales.isEmpty()) {
             System.out.println("No hay materiales registrados.");
         } else {
-            System.out.println("--- Lista de Materiales ---");
+            // Crear las columnas para el JTable
+            String[] columnas = {"Tipo", "Código", "Título"};
+            DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+
+            // Llenar la tabla con los materiales
             for (Material material : materiales) {
-                System.out.println(material.getTipo().toUpperCase() + " - " + material.getCodigo() + " - " + material.getTitulo());
+                modelo.addRow(new Object[]{material.getTipo().toUpperCase(), material.getCodigo()});
             }
+
+            // Crear la tabla y mostrarla en una ventana
+            JTable tabla = new JTable(modelo);
+            JScrollPane scroll = new JScrollPane(tabla);
+            JFrame frame = new JFrame("Lista de Materiales");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.add(scroll);
+            frame.setSize(500, 300);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
         }
     }
 }
