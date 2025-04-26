@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 abstract class Material {
     protected String codigo;
@@ -198,12 +200,14 @@ public class Main {
             System.out.println("--- Menú Principal ---");
             System.out.println("1. Agregar material");
             System.out.println("2. Modificar material");
+            System.out.println("3. Listar materiales");
             System.out.print("Seleccione una opción: ");
             int opcion = Integer.parseInt(sc.nextLine());
 
             switch (opcion) {
                 case 1 -> agregarMaterial(sc);
                 case 2 -> modificarMaterial(sc);
+                case 3 -> listarMateriales(sc);
                 default -> System.out.println("Opción no válida.");
             }
 
@@ -240,6 +244,33 @@ public class Main {
             System.out.println("Error al sobrescribir archivo: " + e.getMessage());
         }
     }
+
+    public static void listarMateriales(Scanner sc) {
+        if (materiales.isEmpty()) {
+            System.out.println("No hay materiales registrados.");
+            return;
+        }
+
+        // Crear las columnas para el JTable
+        String[] columnas = {"Tipo", "Código", "Título"};
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+
+        // Llenar la tabla con los materiales
+        for (Material material : materiales) {
+            modelo.addRow(new Object[]{material.getTipo().toUpperCase(), material.getCodigo(), material.titulo});
+        }
+
+        // Crear la tabla y mostrarla en una ventana
+        JTable tabla = new JTable(modelo);
+        JScrollPane scroll = new JScrollPane(tabla);
+        JFrame frame = new JFrame("Lista de Materiales");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.add(scroll);
+        frame.setSize(500, 300);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
 
     public static void agregarMaterial(Scanner sc) {
         System.out.println("--- Agregar Material ---");
